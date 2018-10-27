@@ -1,6 +1,5 @@
 os: osx
 install:
-  - brew install node
   - npm install
 script:
   - git clone https://github.com/Homebrew/homebrew-cask-versions.git
