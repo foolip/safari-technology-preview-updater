@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "jsdom": "^12.2.0",
+    "node-fetch": "^2.2.0"
+  }
+}
