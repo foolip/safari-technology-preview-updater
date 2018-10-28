@@ -12,7 +12,7 @@ script:
   - node gen-cask.js > homebrew-cask-versions/Casks/safari-technology-preview.rb
   - echo DUMMY CHANGE > homebrew-cask-versions/Casks/safari-technology-preview.rb
   - cd homebrew-cask-versions
-  - git diff --quiet && travis_terminate 0 || : # stop if nothing has changed
+  #- git diff --quiet && travis_terminate 0 || : # stop if nothing has changed
 after_success:
   - VERSION=TODO
   - BRANCH=safari-technology-preview-$VERSION
