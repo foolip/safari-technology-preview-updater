@@ -12,47 +12,43 @@ jobs:
   - script: npm install
     displayName: 'npm install'
 
+  - script: |
+      node gen-cask.js
+    displayName: 'node gen-cask.js'
+
   - script: git clone --depth 1 https://github.com/Homebrew/homebrew-cask-versions.git
     displayName: 'git clone homebrew-cask-versions'
 
-  - script: node gen-cask.js > homebrew-cask-versions/Casks/safari-technology-preview.rb
-    displayName: 'node gen-cask.js'
-
-  - script: echo >> homebrew-cask-versions/Casks/safari-technology-preview.rb
-    displayName: 'Dummy change to safari-technology-preview.rb'
-
   - script: |
-      cd homebrew-cask-versions
-      if ! git diff --quiet; then
-        echo "There are changes to safari-technology-preview.rb:"
-        git diff
+      if ! diff homebrew-cask-versions/Casks/safari-technology-preview.rb safari-technology-preview.rb; then
         echo "##vso[task.setvariable variable=changes]true"
       else
         echo "No changes to safari-technology-preview.rb"
       fi
     displayName: 'check for changes'
 
-  - script: brew cask audit --download homebrew-cask-versions/Casks/safari-technology-preview.rb
+  - script: brew cask audit --download safari-technology-preview.rb
     displayName: 'brew cask audit'
     condition: and(succeeded(), variables.changes)
 
-  - script: brew cask style homebrew-cask-versions/Casks/safari-technology-preview.rb
+  - script: brew cask style safari-technology-preview.rb
     displayName: 'brew cask style'
     condition: and(succeeded(), variables.changes)
 
-  - script: HOMEBREW_NO_AUTO_UPDATE=1 brew cask install homebrew-cask-versions/Casks/safari-technology-preview.rb
+  - script: HOMEBREW_NO_AUTO_UPDATE=1 brew cask install safari-technology-preview.rb
     displayName: 'brew cask install'
     condition: and(succeeded(), variables.changes)
 
   - script: |
-      "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --version | tee safaridriver_version.txt
+      SAFARIDRIVER_VERSION=`"/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --version`
+      echo "$SAFARIDRIVER_VERSION"
+      "##vso[task.setvariable variable=safaridriver.version]$SAFARIDRIVER_VERSION"
     displayName: 'safaridriver --version'
     condition: and(succeeded(), variables.changes)
 
   - script: |
-      SAFARIDRIVER_VERSION=`cat safaridriver_version.txt`
-      VERSION=TODO
-      BRANCH=safari-technology-preview-$VERSION
+      BRANCH=safari-technology-preview-$(variables.safari.version)
+      mv safari-technology-preview.rb homebrew-cask-versions/Casks/
       cd homebrew-cask-versions
       git fetch --unshallow
       git checkout -b $BRANCH
@@ -60,10 +56,10 @@ jobs:
       git config user.name "autofoolip"
       git config user.email "auto@foolip.org"
       git commit -F - << EOF
-      Update safari-technology-preview to $VERSION
+      Update safari-technology-preview to $(variables.safari.version)
 
       Version as reported by safaridriver --version:
-      $SAFARIDRIVER_VERSION
+      $(variables.safaridriver.version)
 
       https://dev.azure.com/foolip/safari-technology-preview-updater/_build/results?buildId=$(Build.BuildId)
       EOF
