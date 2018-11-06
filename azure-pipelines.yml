@@ -33,6 +33,14 @@ jobs:
       fi
     displayName: 'Check for changes'
 
+  - script: brew cask audit --download homebrew-cask-versions/Casks/safari-technology-preview.rb
+    displayName: 'Run brew cask audit'
+    condition: and(succeeded(), variables.changes)
+
+  - script: brew cask style homebrew-cask-versions/Casks/safari-technology-preview.rb
+    displayName: 'Run brew cask style'
+    condition: and(succeeded(), variables.changes)
+
   - script: |
       VERSION=TODO
       BRANCH=safari-technology-preview-$VERSION
@@ -46,4 +54,4 @@ jobs:
       git log -1
       git push -f https://autofoolip:$(github.token)@github.com/autofoolip/homebrew-cask-versions.git master $BRANCH
     displayName: 'Push branch'
-    condition: variables.changes
+    condition: and(succeeded(), variables.changes)
