@@ -11,6 +11,8 @@ jobs:
 
   - script: git clone https://github.com/Homebrew/homebrew-cask-versions.git
 
+  - script: npm install
+
   - script: node gen-cask.js > homebrew-cask-versions/Casks/safari-technology-preview.rb
 
   - script: |
