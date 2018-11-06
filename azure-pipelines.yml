@@ -33,6 +33,7 @@ jobs:
   - script: |
       VERSION=TODO
       BRANCH=safari-technology-preview-$VERSION
+      cd homebrew-cask-versions
       git checkout -b $BRANCH
       git add -A
       git config user.name "autofoolip"
