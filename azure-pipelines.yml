@@ -22,7 +22,8 @@ jobs:
   - script: |
       cd homebrew-cask-versions
       if git diff --quiet; then
-        echo "There are changes to safari-technology-preview.rb"
+        echo "There are changes to safari-technology-preview.rb:"
+        git diff
         echo "##vso[task.setvariable variable=changes]true"
       else
         echo "No changes to safari-technology-preview.rb"
@@ -33,11 +34,10 @@ jobs:
       VERSION=TODO
       BRANCH=safari-technology-preview-$VERSION
       git checkout -b $BRANCH
-      git remote add autofoolip
       git add -A
       git config user.name "autofoolip"
       git config user.email "auto@foolip.org"
-      git commit -m "Update safari-technology-preview to $VERSION" -m "$(Build.BuildUri)"
+      git commit -m "Update safari-technology-preview to $VERSION" -m "https://dev.azure.com/foolip/safari-technology-preview-updater/_build/results?buildId=$(Build.BuildId)"
       git log -1
       git push -f https://autofoolip:$(github.token)@github.com/autofoolip/homebrew-cask-versions.git master $BRANCH
     displayName: 'Push branch'
