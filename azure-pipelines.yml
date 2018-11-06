@@ -19,7 +19,7 @@ jobs:
   - script: node gen-cask.js > homebrew-cask-versions/Casks/safari-technology-preview.rb
     displayName: 'Update safari-technology-preview.rb'
 
-  - script: echo "the end" >> homebrew-cask-versions/Casks/safari-technology-preview.rb
+  - script: echo >> homebrew-cask-versions/Casks/safari-technology-preview.rb
     displayName: 'Dummy change to safari-technology-preview.rb'
 
   - script: |
