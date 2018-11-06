@@ -16,7 +16,10 @@ jobs:
       node gen-cask.js
     displayName: 'node gen-cask.js'
 
-  - script: git clone --depth 1 https://github.com/Homebrew/homebrew-cask-versions.git
+  - script: |
+      git clone --single-branch https://github.com/Homebrew/homebrew-cask-versions.git
+      cd homebrew-cask-versions
+      git checkout 23fae0a88868911913c2ee7d527c89164b6d5720
     displayName: 'git clone homebrew-cask-versions'
 
   - script: |
@@ -24,7 +27,6 @@ jobs:
         echo "##vso[task.setvariable variable=changes]true"
       else
         echo "No changes to safari-technology-preview.rb"
-        echo "##vso[task.setvariable variable=changes]true"
       fi
     displayName: 'check for changes'
 
