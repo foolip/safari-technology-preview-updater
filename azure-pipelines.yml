@@ -18,9 +18,6 @@ jobs:
   - script: node gen-cask.js > homebrew-cask-versions/Casks/safari-technology-preview.rb
     displayName: 'node gen-cask.js'
 
-  - script: echo >> homebrew-cask-versions/Casks/safari-technology-preview.rb
-    displayName: 'Dummy change to safari-technology-preview.rb'
-
   - script: |
       cd homebrew-cask-versions
       if ! git diff --quiet; then
@@ -29,6 +26,7 @@ jobs:
         echo "##vso[task.setvariable variable=changes]true"
       else
         echo "No changes to safari-technology-preview.rb"
+        echo "##vso[task.setvariable variable=changes]true"
       fi
     displayName: 'check for changes'
 
