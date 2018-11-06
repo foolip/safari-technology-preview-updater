@@ -13,7 +13,7 @@ jobs:
   - script: npm install
     displayName: 'Install dependencies'
 
-  - script: git clone https://github.com/Homebrew/homebrew-cask-versions.git
+  - script: git clone --depth 1 https://github.com/Homebrew/homebrew-cask-versions.git
     displayName: 'Clone homebrew-cask-versions'
 
   - script: node gen-cask.js > homebrew-cask-versions/Casks/safari-technology-preview.rb
