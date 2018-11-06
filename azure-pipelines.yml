@@ -21,7 +21,7 @@ jobs:
 
   - script: |
       cd homebrew-cask-versions
-      if git diff --quiet; then
+      if ! git diff --quiet; then
         echo "There are changes to safari-technology-preview.rb:"
         git diff
         echo "##vso[task.setvariable variable=changes]true"
