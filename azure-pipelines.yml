@@ -43,11 +43,12 @@ jobs:
     condition: and(succeeded(), variables.changes)
 
   - script: |
-      "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --version
+      "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --version | tee safaridriver_version.txt
     displayName: 'safaridriver --version'
     condition: and(succeeded(), variables.changes)
 
   - script: |
+      SAFARIDRIVER_VERSION=`cat safaridriver_version.txt`
       VERSION=TODO
       BRANCH=safari-technology-preview-$VERSION
       cd homebrew-cask-versions
@@ -56,7 +57,14 @@ jobs:
       git add -A
       git config user.name "autofoolip"
       git config user.email "auto@foolip.org"
-      git commit -m "Update safari-technology-preview to $VERSION" -m "https://dev.azure.com/foolip/safari-technology-preview-updater/_build/results?buildId=$(Build.BuildId)"
+      git commit -F - << EOF
+      Update safari-technology-preview to $VERSION
+
+      Version as reported by `safaridriver --version`:
+      $SAFARIDRIVER_VERSION
+
+      https://dev.azure.com/foolip/safari-technology-preview-updater/_build/results?buildId=$(Build.BuildId)
+      EOF
       git log -1
       git push -f https://autofoolip:$(github.token)@github.com/autofoolip/homebrew-cask-versions.git master $BRANCH
     displayName: 'Push branch'
