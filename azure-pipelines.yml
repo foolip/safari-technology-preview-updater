@@ -44,7 +44,8 @@ jobs:
     displayName: 'brew cask install'
     condition: and(succeeded(), variables.changes)
 
-  - script: "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --version
+  - script: |
+      "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --version
     displayName: 'safaridriver --version'
     condition: and(succeeded(), variables.changes)
 
