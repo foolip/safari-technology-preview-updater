@@ -38,7 +38,7 @@ jobs:
     displayName: 'brew cask style'
     condition: and(succeeded(), variables.changes)
 
-  - script: brew cask install homebrew-cask-versions/Casks/safari-technology-preview.rb
+  - script: HOMEBREW_NO_AUTO_UPDATE=1 brew cask install homebrew-cask-versions/Casks/safari-technology-preview.rb
     displayName: 'brew cask install'
     condition: and(succeeded(), variables.changes)
 
