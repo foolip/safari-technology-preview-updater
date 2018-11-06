@@ -60,7 +60,7 @@ jobs:
       git commit -F - << EOF
       Update safari-technology-preview to $VERSION
 
-      Version as reported by `safaridriver --version`:
+      Version as reported by safaridriver --version:
       $SAFARIDRIVER_VERSION
 
       https://dev.azure.com/foolip/safari-technology-preview-updater/_build/results?buildId=$(Build.BuildId)
