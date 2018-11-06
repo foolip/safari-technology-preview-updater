@@ -1,9 +1,11 @@
 const crypto = require('crypto');
 const fetch = require('node-fetch');
+const fs = require('fs');
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
 const DOWNLOAD_URL = 'https://developer.apple.com/safari/download/';
+const CASK_FILENAME = 'safari-technology-preview.rb';
 
 async function scrapeDownloads() {
   const text = await (await fetch(DOWNLOAD_URL)).text();
@@ -62,7 +64,7 @@ async function generateCask() {
     throw new Error(`Expecting Mojave + High Sierra packages but got ${JSON.stringify(packages)}`);
   }
 
-  console.log(`cask 'safari-technology-preview' do
+  const caskContent = `cask 'safari-technology-preview' do
   version '${version}'
 
   if MacOS.version <= :high_sierra
@@ -94,7 +96,13 @@ async function generateCask() {
                '~/Library/SyncedPreferences/com.apple.SafariTechnologyPreview.plist',
                '~/Library/WebKit/com.apple.SafariTechnologyPreview',
              ]
-end`);
+end
+`;
+
+  // Write cask to file and set Azure Pipelines variable
+  fs.writeFileSync(CASK_FILENAME, caskContent);
+  console.log(`Wrote ${CASK_FILENAME}`);
+  console.log(`##vso[task.setvariable variable=safari.version]${version}`);
 }
 
 generateCask();
