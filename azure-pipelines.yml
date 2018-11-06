@@ -48,7 +48,7 @@ jobs:
     condition: and(succeeded(), variables.changes)
 
   - script: |
-      BRANCH=safari-technology-preview-$(variables.safari.version)
+      BRANCH=safari-technology-preview-$(safari.version)
       mv safari-technology-preview.rb homebrew-cask-versions/Casks/
       cd homebrew-cask-versions
       git fetch --unshallow
@@ -57,10 +57,10 @@ jobs:
       git config user.name "autofoolip"
       git config user.email "auto@foolip.org"
       git commit -F - << EOF
-      Update safari-technology-preview to $(variables.safari.version)
+      Update safari-technology-preview to $(safari.version)
 
       Version as reported by safaridriver --version:
-      $(variables.safaridriver.version)
+      $(safaridriver.version)
 
       https://dev.azure.com/foolip/safari-technology-preview-updater/_build/results?buildId=$(Build.BuildId)&view=logs
       EOF
