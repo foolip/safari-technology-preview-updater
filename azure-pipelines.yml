@@ -43,7 +43,7 @@ jobs:
   - script: |
       SAFARIDRIVER_VERSION=`"/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --version`
       echo "$SAFARIDRIVER_VERSION"
-      "##vso[task.setvariable variable=safaridriver.version]$SAFARIDRIVER_VERSION"
+      echo "##vso[task.setvariable variable=safaridriver.version]$SAFARIDRIVER_VERSION"
     displayName: 'safaridriver --version'
     condition: and(succeeded(), variables.changes)
 
