@@ -16,10 +16,7 @@ jobs:
       node gen-cask.js
     displayName: 'node gen-cask.js'
 
-  - script: |
-      git clone --single-branch https://github.com/Homebrew/homebrew-cask-versions.git
-      cd homebrew-cask-versions
-      git checkout 23fae0a88868911913c2ee7d527c89164b6d5720
+  - script: git clone --depth 1 https://github.com/Homebrew/homebrew-cask-versions.git
     displayName: 'git clone homebrew-cask-versions'
 
   - script: |
