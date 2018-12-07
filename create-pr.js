@@ -64,4 +64,7 @@ async function createPR(owner, branch) {
   console.log(`Created PR: ${newPR.html_url}`);
 }
 
-createPR(process.argv[2], process.argv[3]);
+createPR(process.argv[2], process.argv[3]).catch(reason => {
+  console.error(reason);
+  process.exit(1);
+});
