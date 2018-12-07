@@ -69,6 +69,6 @@ jobs:
     displayName: 'Push branch'
     condition: and(succeeded(), variables.changes)
 
-  - script: GH_TOKEN=$(github.token) node create-pr.js autofoolip safari-technology-preview-DEBUG
+  - script: GH_TOKEN=$(github.token) node create-pr.js autofoolip safari-technology-preview-$(safari.version)
     displayName: 'Create PR'
-    condition: succeeded()
+    condition: and(succeeded(), variables.changes)
