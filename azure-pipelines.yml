@@ -61,7 +61,8 @@ jobs:
       Version as reported by safaridriver --version:
       $(safaridriver.version)
 
-      https://dev.azure.com/foolip/safari-technology-preview-updater/_build/results?buildId=$(Build.BuildId)&view=logs
+      Source: https://developer.apple.com/safari/download/
+      Build: https://dev.azure.com/foolip/safari-technology-preview-updater/_build/results?buildId=$(Build.BuildId)&view=logs
       EOF
       git log -1
       git push -f https://autofoolip:$(github.token)@github.com/autofoolip/homebrew-cask-versions.git master $BRANCH
