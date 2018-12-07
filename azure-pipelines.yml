@@ -12,8 +12,8 @@ jobs:
   - script: npm install
     displayName: 'npm install'
 
-  - script: |
-      node gen-cask.js
+  # Writes safari-technology-preview.rb and sets safari.version variable:
+  - script: node gen-cask.js
     displayName: 'node gen-cask.js'
 
   - script: git clone --depth 1 https://github.com/Homebrew/homebrew-cask-versions.git
@@ -66,4 +66,8 @@ jobs:
       git log -1
       git push -f https://autofoolip:$(github.token)@github.com/autofoolip/homebrew-cask-versions.git master $BRANCH
     displayName: 'Push branch'
+    condition: and(succeeded(), variables.changes)
+
+  - script: GH_TOKEN=$(github.token) node create-pr.js autofoolip safari-technology-preview-$(safari.version)
+    displayName: 'Create PR'
     condition: and(succeeded(), variables.changes)
