@@ -75,6 +75,7 @@ async function generateCask() {
     sha256 '${packages.mojave.sha256}'
   end
 
+  appcast 'https://developer.apple.com/safari/technology-preview/release-notes/'
   name 'Safari Technology Preview'
   homepage 'https://developer.apple.com/safari/download/'
 
