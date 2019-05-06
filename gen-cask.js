@@ -64,14 +64,19 @@ async function generateCask() {
     throw new Error(`Expecting Mojave + High Sierra packages but got ${JSON.stringify(packages)}`);
   }
 
+  const urlParts = packages.mojave.url.split(/\/([0-9a-f-]{55})\//);
+  if (urlParts.length !== 3) {
+    throw new Error(`Expecting Mojave URL with 55-char ID but got ${mojaveURL}`);
+  }
+
   const caskContent = `cask 'safari-technology-preview' do
-  version '${version}'
+  version '${version},${urlParts[1]}'
 
   if MacOS.version <= :high_sierra
     url '${packages.high_sierra.url}'
     sha256 '${packages.high_sierra.sha256}'
   else
-    url '${packages.mojave.url}'
+    url "${urlParts[0]}/#{version.after_comma}/${urlParts[2]}"
     sha256 '${packages.mojave.sha256}'
   end
 
