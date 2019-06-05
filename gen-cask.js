@@ -111,4 +111,7 @@ end
   console.log(`##vso[task.setvariable variable=safari.version]${version}`);
 }
 
-generateCask();
+generateCask().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
