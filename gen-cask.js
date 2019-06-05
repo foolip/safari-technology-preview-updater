@@ -58,26 +58,26 @@ async function scrapeDownloads() {
 async function generateCask() {
   const { version, packages } = await scrapeDownloads();
 
-  // Assume Mojave + High Sierra packages. This will eventually break and will
+  // Assume Mojave + Catalina packages. This will eventually break and will
   // then need to be updated together with the cask structure.
-  if (!(Object.keys(packages).length == 2 && 'mojave' in packages && 'high_sierra' in packages)) {
-    throw new Error(`Expecting Mojave + High Sierra packages but got ${JSON.stringify(packages)}`);
+  if (!(Object.keys(packages).length == 2 && 'mojave' in packages && 'catalina' in packages)) {
+    throw new Error(`Expecting Mojave + Catalina packages but got ${JSON.stringify(packages)}`);
   }
 
-  const urlParts = packages.mojave.url.split(/\/([0-9a-f-]{55})\//);
+  const urlParts = packages.catalina.url.split(/\/([0-9a-f-]{55})\//);
   if (urlParts.length !== 3) {
-    throw new Error(`Expecting Mojave URL with 55-char ID but got ${mojaveURL}`);
+    throw new Error(`Expecting Catalina URL with 55-char ID but got ${packages.catalina.url}`);
   }
 
   const caskContent = `cask 'safari-technology-preview' do
   version '${version},${urlParts[1]}'
 
-  if MacOS.version <= :high_sierra
-    url '${packages.high_sierra.url}'
-    sha256 '${packages.high_sierra.sha256}'
+  if MacOS.version <= :mojave
+    url '${packages.mojave.url}'
+    sha256 '${packages.mojave.sha256}'
   else
     url "${urlParts[0]}/#{version.after_comma}/${urlParts[2]}"
-    sha256 '${packages.mojave.sha256}'
+    sha256 '${packages.catalina.sha256}'
   end
 
   appcast 'https://developer.apple.com/safari/technology-preview/release-notes/'
@@ -85,7 +85,7 @@ async function generateCask() {
   homepage 'https://developer.apple.com/safari/download/'
 
   auto_updates true
-  depends_on macos: '>= :high_sierra'
+  depends_on macos: '>= :mojave'
 
   pkg 'Safari Technology Preview.pkg'
 
