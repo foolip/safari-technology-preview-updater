@@ -1,6 +1,6 @@
 'use strict';
 
-const octokit = require('@octokit/rest')();
+const Octokit = require('@octokit/rest');
 
 const TARGET_OWNER = 'Homebrew';
 const REPO = 'homebrew-cask-versions';
@@ -11,12 +11,11 @@ const PR_BODY_HEADER = `After making all changes to the cask:
 - [x] \`brew cask style --fix {{cask_file}}\` reports no offenses.
 - [x] The commit message includes the cask’s name and version.`;
 
-octokit.authenticate({
-  type: 'token',
-  token: process.env.GH_TOKEN
-});
-
 async function createPR(owner, branch) {
+  const octokit = Octokit({
+    auth: process.env.GH_TOKEN
+  });
+
   // Check for existing PR first.
   const existingPRs = (await octokit.pullRequests.list({
     owner: TARGET_OWNER,
