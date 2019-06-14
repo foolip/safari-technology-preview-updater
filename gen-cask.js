@@ -80,7 +80,7 @@ async function generateCask() {
     sha256 '${packages.catalina.sha256}'
   end
 
-  appcast 'https://developer.apple.com/safari/technology-preview/release-notes/'
+  appcast 'https://developer.apple.com/safari/download/'
   name 'Safari Technology Preview'
   homepage 'https://developer.apple.com/safari/download/'
 
