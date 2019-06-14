@@ -1,4 +1,4 @@
-# Updater for Safari Technology Preview in homebrew-cask-versions
+# Safari Technology Preview Cask Updater
 
 Scrapes [Downloads for Safari](https://developer.apple.com/safari/download/) and sends pull requests to [homebrew-cask-versions](https://github.com/Homebrew/homebrew-cask-versions).
 
