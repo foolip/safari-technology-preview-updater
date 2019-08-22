@@ -28,19 +28,19 @@ async function createPR(owner, branch) {
   }
 
   // Get the commit message from the tip of the branch.
-  const sha = (await octokit.gitdata.getRef({
-    owner: owner,
+  const commit_sha = (await octokit.git.getRef({
+    owner,
     repo: REPO,
     ref: `heads/${branch}`,
   })).data.object.sha;
 
-  const commit = (await octokit.repos.getCommit({
-    owner: owner,
+  const commit = (await octokit.git.getCommit({
+    owner,
     repo: REPO,
-    sha,
+    commit_sha,
   })).data;
 
-  const { message } = commit.commit;
+  const { message } = commit;
 
   const index = message.indexOf('\n');
   if (index === -1) {
