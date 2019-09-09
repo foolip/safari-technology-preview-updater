@@ -64,22 +64,28 @@ async function generateCask() {
     throw new Error(`Expecting Mojave + Catalina packages but got ${JSON.stringify(packages)}`);
   }
 
-  const urlParts = packages.catalina.url.split(/\/([0-9a-f-]{55})\//);
-  if (urlParts.length !== 3) {
+  const catalinaParts = packages.catalina.url.split(/\/([0-9a-f-]{55})\//);
+  if (catalinaParts.length !== 3) {
     throw new Error(`Expecting Catalina URL with 55-char ID but got ${packages.catalina.url}`);
+  }
+  const mojaveParts = packages.mojave.url.split(/\/([0-9a-f-]{55})\//);
+  if (mojaveParts.length !== 3) {
+    throw new Error(`Expecting Mojave URL with 55-char ID but got ${packages.mojave.url}`);
+  }
+  if (catalinaParts[0] !== mojaveParts[0] || catalinaParts[2] !== mojaveParts[2]) {
+    throw new Error(`Expecting same URL structure but structure ${packages.catalina.url} vs. ${packages.mojave.url}`);
   }
 
   const caskContent = `cask 'safari-technology-preview' do
-  version '${version},${urlParts[1]}'
-
   if MacOS.version <= :mojave
-    url '${packages.mojave.url}'
+    version '${version},${mojaveParts[1]}'
     sha256 '${packages.mojave.sha256}'
   else
-    url "${urlParts[0]}/#{version.after_comma}/${urlParts[2]}"
+    version '${version},${catalinaParts[1]}'
     sha256 '${packages.catalina.sha256}'
   end
 
+  url "${catalinaParts[0]}/#{version.after_comma}/${catalinaParts[2]}"
   appcast 'https://developer.apple.com/safari/download/'
   name 'Safari Technology Preview'
   homepage 'https://developer.apple.com/safari/download/'
