@@ -6,6 +6,16 @@ schedules:
     - master
   always: true
 
+trigger:
+  branches:
+    include:
+    - master
+
+pr:
+  branches:
+    include:
+    - master
+
 jobs:
 - job: macOS
 
@@ -75,8 +85,12 @@ jobs:
       git log -1
       git push -f https://autofoolip:$(github.token)@github.com/autofoolip/homebrew-cask-versions.git master $BRANCH
     displayName: 'Push branch'
-    condition: and(succeeded(), variables.changes)
+    condition: |
+      and(succeeded(), variables.changes,
+          eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - script: GH_TOKEN=$(github.token) node create-pr.js autofoolip safari-technology-preview-$(safari.version)
     displayName: 'Create PR'
-    condition: and(succeeded(), variables.changes)
+    condition: |
+      and(succeeded(), variables.changes,
+          eq(variables['Build.SourceBranch'], 'refs/heads/master'))
