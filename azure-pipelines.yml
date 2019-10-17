@@ -32,37 +32,42 @@ jobs:
 
   # Writes safari-technology-preview.rb and sets safari.version variable:
   - script: node gen-cask.js
-    displayName: 'node gen-cask.js'
+    displayName: 'generate cask'
+
+  - script: GH_TOKEN=$(github.token) node find-pr.js autofoolip safari-technology-preview-$(safari.version)
+    displayName: 'find existing PR'
 
   - script: git clone --depth 1 https://github.com/Homebrew/homebrew-cask-versions.git
     displayName: 'git clone homebrew-cask-versions'
+    condition: and(succeeded(), not(variables.haspr))
 
   - script: |
       if ! diff homebrew-cask-versions/Casks/safari-technology-preview.rb safari-technology-preview.rb; then
-        echo "##vso[task.setvariable variable=changes]true"
+        echo "##vso[task.setvariable variable=haschanges]true"
       else
         echo "No changes to safari-technology-preview.rb"
       fi
     displayName: 'check for changes'
+    condition: and(succeeded(), not(variables.haspr))
 
   - script: brew cask audit --download safari-technology-preview.rb
     displayName: 'brew cask audit'
-    condition: and(succeeded(), variables.changes)
+    condition: and(succeeded(), not(variables.haspr), variables.haschanges)
 
   - script: brew cask style safari-technology-preview.rb
     displayName: 'brew cask style'
-    condition: and(succeeded(), variables.changes)
+    condition: and(succeeded(), not(variables.haspr), variables.haschanges)
 
   - script: HOMEBREW_NO_AUTO_UPDATE=1 brew cask install safari-technology-preview.rb
     displayName: 'brew cask install'
-    condition: and(succeeded(), variables.changes)
+    condition: and(succeeded(), not(variables.haspr), variables.haschanges)
 
   - script: |
       SAFARIDRIVER_VERSION=`"/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --version`
       echo "$SAFARIDRIVER_VERSION"
       echo "##vso[task.setvariable variable=safaridriver.version]$SAFARIDRIVER_VERSION"
     displayName: 'safaridriver --version'
-    condition: and(succeeded(), variables.changes)
+    condition: and(succeeded(), not(variables.haspr), variables.haschanges)
 
   - script: |
       BRANCH=safari-technology-preview-$(safari.version)
@@ -83,14 +88,14 @@ jobs:
       Build: https://dev.azure.com/foolip/safari-technology-preview-updater/_build/results?buildId=$(Build.BuildId)&view=logs
       EOF
       git log -1
-      git push -f https://autofoolip:$(github.token)@github.com/autofoolip/homebrew-cask-versions.git master $BRANCH
-    displayName: 'Push branch'
+      git push https://autofoolip:$(github.token)@github.com/autofoolip/homebrew-cask-versions.git master $BRANCH
+    displayName: 'push branch'
     condition: |
-      and(succeeded(), variables.changes,
+      and(succeeded(), not(variables.haspr), variables.haschanges,
           eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - script: GH_TOKEN=$(github.token) node create-pr.js autofoolip safari-technology-preview-$(safari.version)
-    displayName: 'Create PR'
+    displayName: 'create PR'
     condition: |
-      and(succeeded(), variables.changes,
+      and(succeeded(), not(variables.haspr), variables.haschanges,
           eq(variables['Build.SourceBranch'], 'refs/heads/master'))

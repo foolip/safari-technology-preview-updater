@@ -16,17 +16,6 @@ async function createPR(owner, branch) {
     auth: process.env.GH_TOKEN
   });
 
-  // Check for existing PR first.
-  const existingPRs = (await octokit.pullRequests.list({
-    owner: TARGET_OWNER,
-    repo: REPO,
-    head: `${owner}:${branch}`,
-  })).data;
-  if (existingPRs.length !== 0) {
-    console.log(`Found existing PR: ${existingPRs[0].html_url}`);
-    return;
-  }
-
   // Get the commit message from the tip of the branch.
   const commit_sha = (await octokit.git.getRef({
     owner,
