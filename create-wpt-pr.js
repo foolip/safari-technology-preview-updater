@@ -2,7 +2,7 @@
 
 const Octokit = require('@octokit/rest');
 
-const HOMEBREW_HEADER = `After making all changes to the cask:
+const PR_BODY_HEADER = `After making all changes to the cask:
 
 - [x] \`brew cask audit --download {{cask_file}}\` is error-free.
 - [x] \`brew cask style --fix {{cask_file}}\` reports no offenses.
@@ -18,13 +18,13 @@ async function createPR(target, source) {
 
   // Get the commit message from the tip of the branch.
   const commit_sha = (await octokit.git.getRef({
-    owner: sourceOwner,
+    owner,
     repo,
     ref: `heads/${branch}`,
   })).data.object.sha;
 
   const commit = (await octokit.git.getCommit({
-    owner: sourceOwner,
+    owner,
     repo,
     commit_sha,
   })).data;
@@ -37,17 +37,16 @@ async function createPR(target, source) {
   }
 
   const title = message.substr(0, index);
-  let body = message.substr(index).trim();
-  if (target === 'Homebrew/homebrew-cask-versions') {
-    body = `${HOMEBREW_HEADER}\n\n----\n\n${body}`;
-  }
+  const commitBody = message.substr(index).trim();
+
+  const body = `${PR_BODY_HEADER}\n\n----\n\n${commitBody}`;
 
   const newPR = (await octokit.pullRequests.create({
     owner: targetOwner,
     repo,
     title,
     body,
-    head: `${sourceOwner}:${branch}`,
+    head: `${owner}:${branch}`,
     base: 'master',
   })).data;
 
