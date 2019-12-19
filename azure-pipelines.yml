@@ -30,30 +30,30 @@ jobs:
   - script: npm install
     displayName: 'npm install'
 
-  # Writes safari-technology-preview.rb and sets safari.version variable:
+  # Writes safari-technology-preview.rb and sets 'safari.version' variable:
   - script: node gen-cask.js
     displayName: 'generate cask'
 
-  # Sets homebrew.haspr and wpt.haspr variables if open PRs exist:
+  # Sets 'homebrew.haspr' and 'wpt.haspr' variables if open PRs exist:
   - script: GH_TOKEN=$(github.token) node find-prs.js autofoolip safari-technology-preview-$(safari.version)
     displayName: 'find open PRs'
 
   - script: HOMEBREW_NO_AUTO_UPDATE=1 brew cask install safari-technology-preview.rb
     displayName: 'brew cask install'
-    condition: and(succeeded(), or(not(variables.homebrew.haspr), not(variables.wpt.haspr)))
+    condition: and(succeeded(), or(not(variables['homebrew.haspr']), not(variables['wpt.haspr'])))
 
   - script: |
       SAFARIDRIVER_VERSION=`"/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver" --version`
       echo "$SAFARIDRIVER_VERSION"
       echo "##vso[task.setvariable variable=safaridriver.version]$SAFARIDRIVER_VERSION"
     displayName: 'safaridriver --version'
-    condition: and(succeeded(), or(not(variables.homebrew.haspr), not(variables.wpt.haspr)))
+    condition: and(succeeded(), or(not(variables['homebrew.haspr']), not(variables['wpt.haspr'])))
 
   # homebrew-specific steps:
 
   - script: git clone --depth 1 https://github.com/Homebrew/homebrew-cask-versions.git
     displayName: 'homebrew: git clone homebrew-cask-versions'
-    condition: and(succeeded(), not(variables.homebrew.haspr))
+    condition: and(succeeded(), not(variables['homebrew.haspr']))
 
   - script: |
       if ! diff homebrew-cask-versions/Casks/safari-technology-preview.rb safari-technology-preview.rb; then
@@ -62,15 +62,15 @@ jobs:
         echo "No changes to safari-technology-preview.rb"
       fi
     displayName: 'homebrew: check for changes'
-    condition: and(succeeded(), not(variables.homebrew.haspr))
+    condition: and(succeeded(), not(variables['homebrew.haspr']))
 
   - script: brew cask audit --download safari-technology-preview.rb
     displayName: 'homebrew: brew cask audit'
-    condition: and(succeeded(), not(variables.homebrew.haspr), variables.homebrew.haschanges)
+    condition: and(succeeded(), not(variables['homebrew.haspr']), variables['homebrew.haschanges'])
 
   - script: brew cask style safari-technology-preview.rb
     displayName: 'homebrew: brew cask style'
-    condition: and(succeeded(), not(variables.homebrew.haspr), variables.homebrew.haschanges)
+    condition: and(succeeded(), not(variables['homebrew.haspr']), variables['homebrew.haschanges'])
 
   - script: |
       BRANCH=safari-technology-preview-$(safari.version)
@@ -94,20 +94,20 @@ jobs:
       git push https://autofoolip:$(github.token)@github.com/autofoolip/homebrew-cask-versions.git master $BRANCH
     displayName: 'homebrew: push branch'
     condition: |
-      and(succeeded(), not(variables.homebrew.haspr), variables.homebrew.haschanges,
+      and(succeeded(), not(variables['homebrew.haspr']), variables['homebrew.haschanges'],
           eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - script: GH_TOKEN=$(github.token) node create-pr.js Homebrew/homebrew-cask-versions autofoolip:safari-technology-preview-$(safari.version)
     displayName: 'homebrew: create PR'
     condition: |
-      and(succeeded(), not(variables.homebrew.haspr), variables.homebrew.haschanges,
+      and(succeeded(), not(variables['homebrew.haspr']), variables['homebrew.haschanges'],
           eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   # wpt-specific steps:
 
   - script: git clone --depth 1 https://github.com/web-platform-tests/wpt.git
     displayName: 'wpt: git clone wpt'
-    condition: and(succeeded(), not(variables.wpt.haspr))
+    condition: and(succeeded(), not(variables['wpt.haspr']))
 
   - script: |
       if ! diff wpt/tools/ci/azure/safari-technology-preview.rb safari-technology-preview.rb; then
@@ -116,7 +116,7 @@ jobs:
         echo "No changes to safari-technology-preview.rb"
       fi
     displayName: 'wpt: check for changes'
-    condition: and(succeeded(), not(variables.wpt.haspr))
+    condition: and(succeeded(), not(variables['wpt.haspr']))
 
   - script: |
       BRANCH=safari-technology-preview-$(safari.version)
@@ -140,11 +140,11 @@ jobs:
       git push https://autofoolip:$(github.token)@github.com/autofoolip/wpt.git master $BRANCH
     displayName: 'wpt: push branch'
     condition: |
-      and(succeeded(), not(variables.wpt.haspr), variables.wpt.haschanges,
+      and(succeeded(), not(variables['wpt.haspr']), variables['wpt.haschanges'],
           eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - script: GH_TOKEN=$(github.token) node create-pr.js web-platform-tests/wpt autofoolip:safari-technology-preview-$(safari.version)
     displayName: 'wpt: create PR'
     condition: |
-      and(succeeded(), not(variables.wpt.haspr), variables.wpt.haschanges,
+      and(succeeded(), not(variables['wpt.haspr']), variables['wpt.haschanges'],
           eq(variables['Build.SourceBranch'], 'refs/heads/master'))
