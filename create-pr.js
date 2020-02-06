@@ -1,6 +1,6 @@
 'use strict';
 
-const Octokit = require('@octokit/rest');
+const { Octokit } = require('@octokit/rest');
 
 const HOMEBREW_HEADER = `After making all changes to the cask:
 
@@ -42,7 +42,7 @@ async function createPR(target, source) {
     body = `${HOMEBREW_HEADER}\n\n----\n\n${body}`;
   }
 
-  const newPR = (await octokit.pullRequests.create({
+  const newPR = (await octokit.pulls.create({
     owner: targetOwner,
     repo,
     title,

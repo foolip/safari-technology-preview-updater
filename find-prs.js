@@ -1,6 +1,6 @@
 'use strict';
 
-const Octokit = require('@octokit/rest');
+const { Octokit } = require('@octokit/rest');
 
 const targets = [
   ['Homebrew', 'homebrew-cask-versions', 'homebrew'],
@@ -13,7 +13,7 @@ async function findPRs(head) {
   });
 
   for (const [owner, repo, prefix] of targets) {
-    const pr = (await octokit.pullRequests.list({
+    const pr = (await octokit.pulls.list({
       owner,
       repo,
       head,

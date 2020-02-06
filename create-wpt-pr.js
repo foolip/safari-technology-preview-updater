@@ -1,6 +1,6 @@
 'use strict';
 
-const Octokit = require('@octokit/rest');
+const { Octokit } = require('@octokit/rest');
 
 const PR_BODY_HEADER = `After making all changes to the cask:
 
@@ -41,7 +41,7 @@ async function createPR(target, source) {
 
   const body = `${PR_BODY_HEADER}\n\n----\n\n${commitBody}`;
 
-  const newPR = (await octokit.pullRequests.create({
+  const newPR = (await octokit.pulls.create({
     owner: targetOwner,
     repo,
     title,
