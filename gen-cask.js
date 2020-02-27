@@ -24,7 +24,7 @@ async function scrapeDownloads() {
     throw new Error(`Cannot find container for STP section`);
   }
 
-  const versionMatch = container.textContent.replace('💯', '100').match(/Release\s+(\d+)/);
+  const versionMatch = container.textContent.match(/Release\s+(\d+)/);
   if (!versionMatch) {
     throw new Error(`Cannot find STP version in ${JSON.stringify(container.textContent)}`);
   }
