@@ -122,8 +122,8 @@ jobs:
       BRANCH=safari-technology-preview-$(safari.version)
       cp safari-technology-preview.rb wpt/tools/ci/azure/
       cd wpt
-      git fetch --unshallow
-      git checkout -b $BRANCH
+      git fetch origin epochs/three_hourly
+      git checkout -b $BRANCH FETCH_HEAD
       git add -A
       git config user.name "autofoolip"
       git config user.email "auto@foolip.org"
