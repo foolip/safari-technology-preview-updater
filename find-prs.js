@@ -8,7 +8,7 @@ const targets = [
 ];
 
 async function findPRs(head) {
-  const octokit = Octokit({
+  const octokit = new Octokit({
     auth: process.env.GH_TOKEN
   });
 

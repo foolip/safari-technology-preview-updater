@@ -12,7 +12,7 @@ async function createPR(target, source) {
   const [targetOwner, repo] = target.split('/');
   const [sourceOwner, branch] = source.split(':');
 
-  const octokit = Octokit({
+  const octokit = new Octokit({
     auth: process.env.GH_TOKEN
   });
 
