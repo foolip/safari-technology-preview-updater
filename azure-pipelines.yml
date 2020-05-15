@@ -51,7 +51,7 @@ jobs:
 
   # homebrew-specific steps:
 
-  - script: git clone --depth 1 https://github.com/Homebrew/homebrew-cask-versions.git
+  - script: git clone --depth 1 --no-tags https://github.com/Homebrew/homebrew-cask-versions.git
     displayName: 'homebrew: git clone homebrew-cask-versions'
     condition: and(succeeded(), not(variables['homebrew.haspr']))
 
@@ -105,7 +105,7 @@ jobs:
 
   # wpt-specific steps:
 
-  - script: git clone --depth 1 https://github.com/web-platform-tests/wpt.git
+  - script: git clone --depth 1 --no-tags https://github.com/web-platform-tests/wpt.git
     displayName: 'wpt: git clone wpt'
     condition: and(succeeded(), not(variables['wpt.haspr']))
 
