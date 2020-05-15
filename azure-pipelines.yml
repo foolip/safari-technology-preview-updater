@@ -138,7 +138,7 @@ jobs:
       Build: https://dev.azure.com/foolip/safari-technology-preview-updater/_build/results?buildId=$(Build.BuildId)&view=logs
       EOF
       git log -1
-      git push https://autofoolip:$(github.token)@github.com/autofoolip/wpt.git $BRANCH
+      git push https://autofoolip:$(github.token)@github.com/autofoolip/wpt.git master $BRANCH
     displayName: 'wpt: push branch'
     condition: |
       and(succeeded(), not(variables['wpt.haspr']), variables['wpt.haschanges'],
