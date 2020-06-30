@@ -58,31 +58,31 @@ async function scrapeDownloads() {
 async function generateCask() {
   const { version, packages } = await scrapeDownloads();
 
-  // Assume Mojave + Catalina packages. This will eventually break and will
+  // Assume Catalina + Big Sur packages. This will eventually break and will
   // then need to be updated together with the cask structure.
-  if (!(Object.keys(packages).length == 2 && 'mojave' in packages && 'catalina' in packages)) {
-    throw new Error(`Expecting Mojave + Catalina packages but got ${JSON.stringify(packages)}`);
+  if (!(Object.keys(packages).length == 2 && 'catalina' in packages && 'big_sur' in packages)) {
+    throw new Error(`Expecting Catalina + Big Sur packages but got ${JSON.stringify(packages)}`);
   }
 
   const catalinaParts = packages.catalina.url.split(/\/([0-9a-f-]{55})\//);
   if (catalinaParts.length !== 3) {
     throw new Error(`Expecting Catalina URL with 55-char ID but got ${packages.catalina.url}`);
   }
-  const mojaveParts = packages.mojave.url.split(/\/([0-9a-f-]{55})\//);
-  if (mojaveParts.length !== 3) {
-    throw new Error(`Expecting Mojave URL with 55-char ID but got ${packages.mojave.url}`);
+  const bigSurParts = packages.big_sur.url.split(/\/([0-9a-f-]{55})\//);
+  if (bigSurParts.length !== 3) {
+    throw new Error(`Expecting Big Sur URL with 55-char ID but got ${packages.big_sur.url}`);
   }
-  if (catalinaParts[0] !== mojaveParts[0] || catalinaParts[2] !== mojaveParts[2]) {
-    throw new Error(`Expecting same URL structure but structure ${packages.catalina.url} vs. ${packages.mojave.url}`);
+  if (catalinaParts[0] !== bigSurParts[0] || catalinaParts[2] !== bigSurParts[2]) {
+    throw new Error(`Expecting same URL structure but structure ${packages.catalina.url} vs. ${packages.big_sur.url}`);
   }
 
   const caskContent = `cask 'safari-technology-preview' do
-  if MacOS.version <= :mojave
-    version '${version},${mojaveParts[1]}'
-    sha256 '${packages.mojave.sha256}'
-  else
+  if MacOS.version <= :catalina
     version '${version},${catalinaParts[1]}'
     sha256 '${packages.catalina.sha256}'
+  else
+    version '${version},${bigSurParts[1]}'
+    sha256 '${packages.big_sur.sha256}'
   end
 
   url "${catalinaParts[0]}/#{version.after_comma}/${catalinaParts[2]}"
@@ -91,7 +91,7 @@ async function generateCask() {
   homepage 'https://developer.apple.com/safari/download/'
 
   auto_updates true
-  depends_on macos: '>= :mojave'
+  depends_on macos: '>= :catalina'
 
   pkg 'Safari Technology Preview.pkg'
 
