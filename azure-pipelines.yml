@@ -3,18 +3,18 @@ schedules:
   displayName: Every six hours
   branches:
     include:
-    - master
+    - main
   always: true
 
 trigger:
   branches:
     include:
-    - master
+    - main
 
 pr:
   branches:
     include:
-    - master
+    - main
 
 jobs:
 - job: macOS
@@ -95,13 +95,13 @@ jobs:
     displayName: 'homebrew: push branch'
     condition: |
       and(succeeded(), not(variables['homebrew.haspr']), variables['homebrew.haschanges'],
-          eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+          eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
   - script: GH_TOKEN=$(github.token) node create-pr.js Homebrew/homebrew-cask-versions autofoolip:safari-technology-preview-$(safari.version)
     displayName: 'homebrew: create PR'
     condition: |
       and(succeeded(), not(variables['homebrew.haspr']), variables['homebrew.haschanges'],
-          eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+          eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
   # wpt-specific steps:
 
@@ -142,10 +142,10 @@ jobs:
     displayName: 'wpt: push branch'
     condition: |
       and(succeeded(), not(variables['wpt.haspr']), variables['wpt.haschanges'],
-          eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+          eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
   - script: GH_TOKEN=$(github.token) node create-pr.js web-platform-tests/wpt autofoolip:safari-technology-preview-$(safari.version)
     displayName: 'wpt: create PR'
     condition: |
       and(succeeded(), not(variables['wpt.haspr']), variables['wpt.haschanges'],
-          eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+          eq(variables['Build.SourceBranch'], 'refs/heads/main'))
