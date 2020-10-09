@@ -53,7 +53,7 @@ jobs:
 
   - script: git clone --depth 1 --no-tags https://github.com/Homebrew/homebrew-cask-versions.git
     displayName: 'homebrew: git clone homebrew-cask-versions'
-    condition: and(succeeded(), not(variables['homebrew.haspr']))
+    condition: and(False, not(variables['homebrew.haspr']))
 
   - script: |
       if ! diff homebrew-cask-versions/Casks/safari-technology-preview.rb safari-technology-preview.rb; then
@@ -62,15 +62,15 @@ jobs:
         echo "No changes to safari-technology-preview.rb"
       fi
     displayName: 'homebrew: check for changes'
-    condition: and(succeeded(), not(variables['homebrew.haspr']))
+    condition: and(False, not(variables['homebrew.haspr']))
 
   - script: brew cask audit --download safari-technology-preview.rb
     displayName: 'homebrew: brew cask audit'
-    condition: and(succeeded(), not(variables['homebrew.haspr']), variables['homebrew.haschanges'])
+    condition: and(False, not(variables['homebrew.haspr']), variables['homebrew.haschanges'])
 
   - script: brew cask style safari-technology-preview.rb
     displayName: 'homebrew: brew cask style'
-    condition: and(succeeded(), not(variables['homebrew.haspr']), variables['homebrew.haschanges'])
+    condition: and(False, not(variables['homebrew.haspr']), variables['homebrew.haschanges'])
 
   - script: |
       BRANCH=safari-technology-preview-$(safari.version)
@@ -94,13 +94,13 @@ jobs:
       git push https://autofoolip:$(github.token)@github.com/autofoolip/homebrew-cask-versions.git master $BRANCH
     displayName: 'homebrew: push branch'
     condition: |
-      and(succeeded(), not(variables['homebrew.haspr']), variables['homebrew.haschanges'],
+      and(False, not(variables['homebrew.haspr']), variables['homebrew.haschanges'],
           eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
   - script: GH_TOKEN=$(github.token) node create-pr.js Homebrew/homebrew-cask-versions autofoolip:safari-technology-preview-$(safari.version)
     displayName: 'homebrew: create PR'
     condition: |
-      and(succeeded(), not(variables['homebrew.haspr']), variables['homebrew.haschanges'],
+      and(False, not(variables['homebrew.haspr']), variables['homebrew.haschanges'],
           eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
   # wpt-specific steps:
