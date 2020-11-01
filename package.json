@@ -9,7 +9,7 @@
     "url": "https://github.com/foolip/safari-technology-preview-updater.git"
   },
   "dependencies": {
-    "@octokit/rest": "18.0.6",
+    "@octokit/rest": "18.0.7",
     "jsdom": "16.4.0",
     "node-fetch": "2.6.1"
   }
