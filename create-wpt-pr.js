@@ -48,6 +48,7 @@ async function createPR(target, source) {
     body,
     head: `${owner}:${branch}`,
     base: 'master',
+    maintainer_can_modify: true,
   })).data;
 
   console.log(`Created PR: ${newPR.html_url}`);
