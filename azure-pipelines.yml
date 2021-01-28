@@ -38,8 +38,8 @@ jobs:
   - script: GH_TOKEN=$(github.token) node find-prs.js autofoolip safari-technology-preview-$(safari.version)
     displayName: 'find open PRs'
 
-  - script: HOMEBREW_NO_AUTO_UPDATE=1 brew cask install safari-technology-preview.rb
-    displayName: 'brew cask install'
+  - script: HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask safari-technology-preview.rb
+    displayName: 'brew install --cask'
     condition: and(succeeded(), or(not(variables['homebrew.haspr']), not(variables['wpt.haspr'])))
 
   - script: |
