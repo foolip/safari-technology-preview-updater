@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@octokit/rest": "18.5.5",
-    "jsdom": "16.5.3",
+    "jsdom": "16.6.0",
     "node-fetch": "2.6.1"
   }
 }
