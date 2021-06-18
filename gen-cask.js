@@ -35,21 +35,25 @@ async function scrapeDownloads() {
   }
 
   const links = container.querySelectorAll('a[href*="SafariTechnologyPreview.dmg"');
-  const packages = {};
+  if (!links.length) {
+    throw new Error("No SafariTechnologyPreview.dmg links found");
+  }
+
+  const packages = [];
   for (const link of links) {
     const linkText = link.textContent.trim();
-    const osVersionMatch = linkText.match(/^Safari Technology Preview for macOS (.*)/);
-    if (!osVersionMatch) {
+    const osMatch = linkText.match(/^Safari Technology Preview for macOS (.*)/);
+    if (!osMatch) {
       throw new Error(`Cannot find macOS version in ${JSON.stringify(linkText)}`);
     }
-    const osVersion = osVersionMatch[1].toLowerCase().replace(/\s/g, '_');
+    const os = osMatch[1].toLowerCase().replace(/\s/g, '_');
 
     const url = link.href;
     const hash = crypto.createHash('sha256');
     hash.update(await (await fetch(url)).buffer());
     const sha256 = hash.digest('hex');
 
-    packages[osVersion] = { url, sha256 };
+    packages.push({ os, url, sha256 });
   }
 
   return { version, packages };
@@ -58,40 +62,37 @@ async function scrapeDownloads() {
 async function generateCask() {
   const { version, packages } = await scrapeDownloads();
 
-  // Assume Catalina + Big Sur packages. This will eventually break and will
-  // then need to be updated together with the cask structure.
-  if (!(Object.keys(packages).length == 2 && 'catalina' in packages && 'big_sur' in packages)) {
-    throw new Error(`Expecting Catalina + Big Sur packages but got ${JSON.stringify(packages)}`);
+  let caskContent = `cask "safari-technology-preview" do`;
+
+  let firstOS = true;
+  let oldestOS;
+  for (const { os, url, sha256 } of packages) {
+    const urlParts = url.split(/\/([0-9a-f-]{55})\//);
+    if (urlParts.length !== 3) {
+      throw new Error(`Expecting URL with 55-char ID but got ${url}`);
+    }
+
+    caskContent += `
+  ${firstOS ? 'if' : 'elsif'} MacOS.version == :${os}
+    version "${version},${urlParts[1]}"
+    url "${urlParts[0]}/#{version.after_comma}/${urlParts[2]}"
+    sha256 "${sha256}"`;
+
+    firstOS = false;
+
+    // Assume the last macOS listed is the oldest.
+    oldestOS = os;
   }
 
-  const catalinaParts = packages.catalina.url.split(/\/([0-9a-f-]{55})\//);
-  if (catalinaParts.length !== 3) {
-    throw new Error(`Expecting Catalina URL with 55-char ID but got ${packages.catalina.url}`);
-  }
-  const bigSurParts = packages.big_sur.url.split(/\/([0-9a-f-]{55})\//);
-  if (bigSurParts.length !== 3) {
-    throw new Error(`Expecting Big Sur URL with 55-char ID but got ${packages.big_sur.url}`);
-  }
-  if (catalinaParts[0] !== bigSurParts[0] || catalinaParts[2] !== bigSurParts[2]) {
-    throw new Error(`Expecting same URL structure but structure ${packages.catalina.url} vs. ${packages.big_sur.url}`);
-  }
-
-  const caskContent = `cask "safari-technology-preview" do
-  if MacOS.version <= :catalina
-    version "${version},${catalinaParts[1]}"
-    sha256 "${packages.catalina.sha256}"
-  else
-    version "${version},${bigSurParts[1]}"
-    sha256 "${packages.big_sur.sha256}"
+  caskContent += `
   end
 
-  url "${catalinaParts[0]}/#{version.after_comma}/${catalinaParts[2]}"
   appcast "https://developer.apple.com/safari/download/"
   name "Safari Technology Preview"
   homepage "https://developer.apple.com/safari/download/"
 
   auto_updates true
-  depends_on macos: ">= :catalina"
+  depends_on macos: ">= :${oldestOS}"
 
   pkg "Safari Technology Preview.pkg"
 
