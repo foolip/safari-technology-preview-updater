@@ -67,7 +67,7 @@ async function generateCask() {
   let firstOS = true;
   let oldestOS;
   for (const { os, url, sha256 } of packages) {
-    const urlParts = url.split(/\/([0-9a-f-]{55})\//);
+    const urlParts = url.split(/\/([0-9a-f-]{55})\//i);
     if (urlParts.length !== 3) {
       throw new Error(`Expecting URL with 55-char ID but got ${url}`);
     }
